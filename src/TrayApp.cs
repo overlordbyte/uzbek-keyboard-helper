@@ -10,6 +10,7 @@ public sealed class TrayApp : ApplicationContext
     private readonly KeyboardHook      _hook;
     private readonly ToolStripMenuItem _enableItem;
     private readonly ToolStripMenuItem _startupItem;
+    private readonly ContextMenuStrip  _menu;
     private bool _enabled = true;
 
     public TrayApp()
@@ -24,24 +25,24 @@ public sealed class TrayApp : ApplicationContext
             Checked = IsStartupEnabled()
         };
 
-        var menu = new ContextMenuStrip();
-        menu.Items.Add(_enableItem);
-        menu.Items.Add(new ToolStripSeparator());
-        menu.Items.Add(_startupItem);
-        menu.Items.Add(new ToolStripSeparator());
-        menu.Items.Add("hihi.uz", null, OnOpenHihi);
-        menu.Items.Add(new ToolStripSeparator());
-        menu.Items.Add("Chiqish", null, OnExit);
+        _menu = new ContextMenuStrip();
+        _menu.Items.Add(_enableItem);
+        _menu.Items.Add(new ToolStripSeparator());
+        _menu.Items.Add(_startupItem);
+        _menu.Items.Add(new ToolStripSeparator());
+        _menu.Items.Add("hihi.uz", null, OnOpenHihi);
+        _menu.Items.Add(new ToolStripSeparator());
+        _menu.Items.Add("Chiqish", null, OnExit);
 
         _trayIcon = new NotifyIcon
         {
-            Icon             = BuildIcon(enabled: true),
-            Text             = "O'zbek Keyboard Helper — Yoqilgan",
-            ContextMenuStrip = menu,
-            Visible          = true
+            Icon    = BuildIcon(enabled: true),
+            Text    = "O'zbek Keyboard Helper — Yoqilgan",
+            Visible = true
         };
 
-        _trayIcon.DoubleClick += OnToggleEnabled;
+        _trayIcon.MouseUp      += OnTrayMouseUp;
+        _trayIcon.DoubleClick  += OnToggleEnabled;
 
         if (!IsStartupEnabled())
         {
@@ -57,6 +58,12 @@ public sealed class TrayApp : ApplicationContext
         }
 
         UpdateMenuState();
+    }
+
+    private void OnTrayMouseUp(object? sender, MouseEventArgs e)
+    {
+        if (e.Button == MouseButtons.Right)
+            _menu.Show(Control.MousePosition);
     }
 
     private void OnToggleEnabled(object? sender, EventArgs e)
