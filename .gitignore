@@ -1,0 +1,18 @@
+# Build outputs
+publish/
+bin/
+obj/
+
+# Local build helpers (Docker-based, not needed on GitHub Actions)
+ca-bundle.crt
+export-certs.ps1
+build.bat
+
+# IDE
+.vs/
+*.user
+*.suo
+
+# OS
+Thumbs.db
+.DS_Store
